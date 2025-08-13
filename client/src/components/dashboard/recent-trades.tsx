@@ -7,6 +7,7 @@ import { useTrades } from "@/hooks/use-trades";
 import { useStrategies } from "@/hooks/use-strategies";
 import { formatCurrency, formatPercentage, calculatePercentage } from "@/lib/calculations";
 import { Link } from "wouter";
+import { Badge } from "@/components/ui/badge";
 
 export default function RecentTrades() {
   const { trades, isLoading } = useTrades();
