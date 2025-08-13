@@ -40,8 +40,8 @@ export default function StrategyPerformance() {
     const strategyTrades = trades.filter(trade => trade.whichSetup === strategyName);
     return {
       trades: strategyTrades.length,
-      winRate: calculateWinRate(strategyTrades),
-      pnl: calculateTotalPnL(strategyTrades),
+      winRate: calculateWinRate(strategyTrades, strategies),
+      pnl: calculateTotalPnL(strategyTrades, strategies),
     };
   };
 

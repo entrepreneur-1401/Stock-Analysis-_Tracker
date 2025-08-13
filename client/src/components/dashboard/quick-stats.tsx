@@ -39,14 +39,14 @@ export default function QuickStats() {
   const bestStrategy = Object.entries(strategyPerformance)
     .map(([strategy, strategyTrades]) => ({
       strategy,
-      pnl: calculateTotalPnL(strategyTrades),
+      pnl: calculateTotalPnL(strategyTrades, strategies),
     }))
     .sort((a, b) => b.pnl - a.pnl)[0];
 
   const worstStrategy = Object.entries(strategyPerformance)
     .map(([strategy, strategyTrades]) => ({
       strategy,
-      pnl: calculateTotalPnL(strategyTrades),
+      pnl: calculateTotalPnL(strategyTrades, strategies),
     }))
     .sort((a, b) => a.pnl - b.pnl)[0];
 

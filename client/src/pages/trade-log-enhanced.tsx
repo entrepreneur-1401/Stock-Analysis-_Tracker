@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Plus, Search, Filter, Calendar, Download, FileDown, X, Eye } from "lucide-react";
+import { Plus, Search, Filter, Calendar, Download, FileDown, X, Eye, ExternalLink, Image } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -393,6 +393,27 @@ export default function TradeLogEnhanced() {
                   
                   <FormField
                     control={form.control}
+                    name="setupFollowed"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>
+                            Setup Followed
+                          </FormLabel>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
                     name="screenshotLink"
                     render={({ field }) => (
                       <FormItem>
@@ -672,7 +693,9 @@ export default function TradeLogEnhanced() {
                       <TableHead>P&L %</TableHead>
                       <TableHead>Strategy</TableHead>
                       <TableHead>Emotion</TableHead>
+                      <TableHead>Setup</TableHead>
                       <TableHead>Notes</TableHead>
+                      <TableHead>Chart</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -723,12 +746,32 @@ export default function TradeLogEnhanced() {
                               <Badge variant="secondary">{trade.emotion}</Badge>
                             ) : "-"}
                           </TableCell>
+                          <TableCell>
+                            <Badge variant={trade.setupFollowed ? "default" : "secondary"}>
+                              {trade.setupFollowed ? "Yes" : "No"}
+                            </Badge>
+                          </TableCell>
                           <TableCell className="max-w-[200px]">
                             {trade.notes ? (
                               <div className="truncate" title={trade.notes}>
                                 {trade.notes}
                               </div>
                             ) : "-"}
+                          </TableCell>
+                          <TableCell>
+                            {trade.screenshotLink ? (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                asChild
+                              >
+                                <a href={trade.screenshotLink} target="_blank" rel="noopener noreferrer">
+                                  <ExternalLink className="w-4 h-4" />
+                                </a>
+                              </Button>
+                            ) : (
+                              <span className="text-gray-400">-</span>
+                            )}
                           </TableCell>
                           <TableCell>
                             <Button

@@ -295,6 +295,27 @@ export default function TradeDetailModal({ trade, isOpen, onClose }: TradeDetail
                     
                     <FormField
                       control={form.control}
+                      name="setupFollowed"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel>
+                              Setup Followed
+                            </FormLabel>
+                            <FormMessage />
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
                       name="whichSetup"
                       render={({ field }) => (
                         <FormItem>

@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTrades } from "@/hooks/use-trades";
+import { useStrategies } from "@/hooks/use-strategies";
 import { calculatePnL } from "@/lib/calculations";
 import { Link } from "wouter";
 
@@ -17,12 +20,15 @@ const quickTradeSchema = z.object({
   quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
   entryPrice: z.coerce.number().min(0.01, "Entry price must be greater than 0"),
   exitPrice: z.coerce.number().min(0.01, "Exit price must be greater than 0"),
+  setupFollowed: z.boolean().default(false),
+  whichSetup: z.string().optional(),
 });
 
 type QuickTradeForm = z.infer<typeof quickTradeSchema>;
 
 export default function QuickTradeForm() {
   const { addTrade, isAdding } = useTrades();
+  const { strategies } = useStrategies();
   
   const form = useForm<QuickTradeForm>({
     resolver: zodResolver(quickTradeSchema),
@@ -31,6 +37,8 @@ export default function QuickTradeForm() {
       quantity: 0,
       entryPrice: 0,
       exitPrice: 0,
+      setupFollowed: false,
+      whichSetup: "",
     },
   });
 
@@ -44,8 +52,8 @@ export default function QuickTradeForm() {
       entryPrice: data.entryPrice.toString(),
       exitPrice: data.exitPrice.toString(),
       profitLoss: profitLoss.toString(),
-      setupFollowed: false,
-      whichSetup: null,
+      setupFollowed: data.setupFollowed,
+      whichSetup: data.whichSetup || null,
       emotion: null,
       notes: null,
       psychologyReflections: null,
@@ -128,6 +136,58 @@ export default function QuickTradeForm() {
                     <FormControl>
                       <Input type="number" step="0.01" placeholder="2,475.25" {...field} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="setupFollowed"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>
+                        Setup Followed
+                      </FormLabel>
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="whichSetup"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Strategy/Setup</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select strategy" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {strategies.map((strategy) => (
+                          <SelectItem key={strategy.id} value={strategy.name}>
+                            {strategy.name}
+                            <Badge 
+                              variant={strategy.status === "active" ? "default" : "secondary"}
+                              className="ml-2"
+                            >
+                              {strategy.status}
+                            </Badge>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
