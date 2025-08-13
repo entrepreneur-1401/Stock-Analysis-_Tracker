@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import TradeDetailModal from "@/components/trade/trade-detail-modal";
 import { useTrades } from "@/hooks/use-trades";
+import { useStrategies } from "@/hooks/use-strategies";
 import { formatCurrency, formatPercentage, calculatePercentage } from "@/lib/calculations";
 import { Link } from "wouter";
 
 export default function RecentTrades() {
   const { trades, isLoading } = useTrades();
+  const { strategies } = useStrategies();
   const [selectedTrade, setSelectedTrade] = useState<any>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
@@ -112,6 +114,20 @@ export default function RecentTrades() {
                     <p className={`font-bold ${pnl >= 0 ? 'text-profit' : 'text-loss'}`}>
                       {formatCurrency(pnl)}
                     </p>
+                    {trade.whichSetup && (
+                      <div className="flex items-center justify-end mt-1">
+                        <Badge 
+                          variant={
+                            strategies.find(s => s.name === trade.whichSetup)?.status === "active" 
+                              ? "default" 
+                              : "secondary"
+                          }
+                          className="text-xs"
+                        >
+                          {strategies.find(s => s.name === trade.whichSetup)?.status || "unknown"}
+                        </Badge>
+                      </div>
+                    )}
                     <p className="text-sm text-gray-500">
                       {formatPercentage(percentage)}
                     </p>

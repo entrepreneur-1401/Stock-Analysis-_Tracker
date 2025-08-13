@@ -24,6 +24,7 @@ import {
   formatCurrency,
   formatPercentage,
   groupTradesByStrategy,
+  getActiveStrategyTrades,
 } from "@/lib/calculations";
 
 export default function Analytics() {

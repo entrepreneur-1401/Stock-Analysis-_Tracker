@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -297,7 +298,7 @@ export default function TradeDetailModal({ trade, isOpen, onClose }: TradeDetail
                       control={form.control}
                       name="setupFollowed"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 col-span-2">
                           <FormControl>
                             <Checkbox
                               checked={field.value}
@@ -329,7 +330,15 @@ export default function TradeDetailModal({ trade, isOpen, onClose }: TradeDetail
                             <SelectContent>
                               {strategies.map((strategy) => (
                                 <SelectItem key={strategy.id} value={strategy.name}>
-                                  {strategy.name}
+                                  <div className="flex items-center justify-between w-full">
+                                    <span>{strategy.name}</span>
+                                    <Badge 
+                                      variant={strategy.status === "active" ? "default" : "secondary"}
+                                      className="ml-2"
+                                    >
+                                      {strategy.status}
+                                    </Badge>
+                                  </div>
                                 </SelectItem>
                               ))}
                             </SelectContent>

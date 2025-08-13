@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Plus, Search, Filter, Calendar, Download, FileDown, X, Eye, ExternalLink, Image } from "lucide-react";
+import ImagePreviewDialog from "@/components/ui/image-preview-dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,6 +56,8 @@ export default function TradeLogEnhanced() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedTrade, setSelectedTrade] = useState<any>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
+  const [previewImageUrl, setPreviewImageUrl] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState<FilterForm>({
     profitLoss: "all"
@@ -96,6 +99,12 @@ export default function TradeLogEnhanced() {
     setIsDetailModalOpen(false);
     setSelectedTrade(null);
   };
+  
+  const handleViewChart = (imageUrl: string, stockName: string) => {
+    setPreviewImageUrl(imageUrl);
+    setIsImagePreviewOpen(true);
+  };
+  
   const onSubmit = (data: TradeForm) => {
     const profitLoss = data.exitPrice 
       ? calculatePnL(data.entryPrice, data.exitPrice, data.quantity)
@@ -763,11 +772,10 @@ export default function TradeLogEnhanced() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                asChild
+                                onClick={() => handleViewChart(trade.screenshotLink, trade.stockName)}
+                                className="hover:bg-blue-50 dark:hover:bg-blue-900/20"
                               >
-                                <a href={trade.screenshotLink} target="_blank" rel="noopener noreferrer">
-                                  <ExternalLink className="w-4 h-4" />
-                                </a>
+                                <Image className="w-4 h-4" />
                               </Button>
                             ) : (
                               <span className="text-gray-400">-</span>
@@ -793,11 +801,20 @@ export default function TradeLogEnhanced() {
           </CardContent>
         </Card>
       </motion.div>
+      
       {/* Trade Detail Modal */}
       <TradeDetailModal
         trade={selectedTrade}
         isOpen={isDetailModalOpen}
         onClose={handleCloseDetailModal}
+      />
+      
+      {/* Image Preview Modal */}
+      <ImagePreviewDialog
+        isOpen={isImagePreviewOpen}
+        onClose={() => setIsImagePreviewOpen(false)}
+        imageUrl={previewImageUrl}
+        title={`Chart Preview - ${selectedTrade?.stockName || 'Trade'}`}
       />
     </>
   );
