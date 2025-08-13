@@ -86,7 +86,7 @@ export default function StrategyPerformance() {
                   className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium text-gray-900">{strategy.name}</h3>
+                    <h3 className="font-medium text-white-900">{strategy.name}</h3>
                     <Badge 
                       variant={strategy.status === "active" ? "default" : strategy.status === "testing" ? "secondary" : "destructive"}
                     >

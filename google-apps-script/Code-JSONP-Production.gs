@@ -256,6 +256,7 @@ function handleGetTrades() {
       stopLoss: row[6] || '',
       targetPrice: row[7] || '',
       profitLoss: row[8] || '0',
+      isTradeTaken: row[9] === 'Yes' || row[9] === true || row[9] === 'TRUE',
       setupFollowed: row[9] === 'Yes' || row[9] === true,
       whichSetup: row[10] || null,
       emotion: row[11] || '',
