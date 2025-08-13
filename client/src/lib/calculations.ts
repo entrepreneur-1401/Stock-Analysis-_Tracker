@@ -1,5 +1,21 @@
 import { Trade } from "@shared/schema";
 
+// Helper function to check if a strategy is active
+export function isActiveStrategy(strategies: any[], strategyName: string | null): boolean {
+  if (!strategyName) return false;
+  const strategy = strategies.find(s => s.name === strategyName);
+  return strategy?.status === "active";
+}
+
+// Filter trades to only include those with active strategies
+export function getActiveStrategyTrades(trades: Trade[], strategies: any[]): Trade[] {
+  return trades.filter(trade => {
+    // If no strategy assigned, include in calculations
+    if (!trade.whichSetup) return true;
+    // Only include if strategy is active
+    return isActiveStrategy(strategies, trade.whichSetup);
+  });
+}
 export function calculatePnL(entryPrice: number, exitPrice: number, quantity: number): number {
   // Handle string inputs and convert to numbers
   const entry = typeof entryPrice === 'string' ? parseFloat(entryPrice) : entryPrice;
@@ -18,10 +34,14 @@ export function calculatePercentage(entryPrice: number, exitPrice: number): numb
   return ((exitPrice - entryPrice) / entryPrice) * 100;
 }
 
-export function calculateWinRate(trades: Trade[]): number {
+export function calculateWinRate(trades: Trade[], strategies?: any[]): number {
   if (trades.length === 0) return 0;
   
-  const winningTrades = trades.filter(trade => {
+  // Filter to only active strategy trades if strategies provided
+  const activeTrades = strategies ? getActiveStrategyTrades(trades, strategies) : trades;
+  if (activeTrades.length === 0) return 0;
+  
+  const winningTrades = activeTrades.filter(trade => {
     // Get P&L from field or calculate it
     let pnl = 0;
     if (trade.profitLoss) {
@@ -36,11 +56,14 @@ export function calculateWinRate(trades: Trade[]): number {
     return pnl > 0;
   });
   
-  return (winningTrades.length / trades.length) * 100;
+  return (winningTrades.length / activeTrades.length) * 100;
 }
 
-export function calculateTotalPnL(trades: Trade[]): number {
-  return trades.reduce((total, trade) => {
+export function calculateTotalPnL(trades: Trade[], strategies?: any[]): number {
+  // Filter to only active strategy trades if strategies provided
+  const activeTrades = strategies ? getActiveStrategyTrades(trades, strategies) : trades;
+  
+  return activeTrades.reduce((total, trade) => {
     // First try to use profitLoss field if it exists and is valid
     if (trade.profitLoss) {
       const pnl = typeof trade.profitLoss === 'string' ? parseFloat(trade.profitLoss) : trade.profitLoss;
@@ -63,8 +86,10 @@ export function calculateTotalPnL(trades: Trade[]): number {
   }, 0);
 }
 
-export function calculateAverageWin(trades: Trade[]): number {
-  const winningTrades = trades.filter(trade => 
+export function calculateAverageWin(trades: Trade[], strategies?: any[]): number {
+  const activeTrades = strategies ? getActiveStrategyTrades(trades, strategies) : trades;
+  
+  const winningTrades = activeTrades.filter(trade => 
     trade.profitLoss && parseFloat(trade.profitLoss.toString()) > 0
   );
   
@@ -77,8 +102,10 @@ export function calculateAverageWin(trades: Trade[]): number {
   return totalWins / winningTrades.length;
 }
 
-export function calculateAverageLoss(trades: Trade[]): number {
-  const losingTrades = trades.filter(trade => 
+export function calculateAverageLoss(trades: Trade[], strategies?: any[]): number {
+  const activeTrades = strategies ? getActiveStrategyTrades(trades, strategies) : trades;
+  
+  const losingTrades = activeTrades.filter(trade => 
     trade.profitLoss && parseFloat(trade.profitLoss.toString()) < 0
   );
   
@@ -91,12 +118,14 @@ export function calculateAverageLoss(trades: Trade[]): number {
   return totalLosses / losingTrades.length;
 }
 
-export function calculateMaxDrawdown(trades: Trade[]): number {
+export function calculateMaxDrawdown(trades: Trade[], strategies?: any[]): number {
+  const activeTrades = strategies ? getActiveStrategyTrades(trades, strategies) : trades;
+  
   let peak = 0;
   let maxDrawdown = 0;
   let runningPnL = 0;
   
-  trades.forEach(trade => {
+  activeTrades.forEach(trade => {
     runningPnL += parseFloat(trade.profitLoss?.toString() || "0");
     
     if (runningPnL > peak) {
@@ -151,8 +180,10 @@ export function groupTradesByStrategy(trades: Trade[]): Record<string, Trade[]> 
   }, {} as Record<string, Trade[]>);
 }
 
-export function calculateProfitFactor(trades: Trade[]): number {
-  const winningTrades = trades.filter(trade => {
+export function calculateProfitFactor(trades: Trade[], strategies?: any[]): number {
+  const activeTrades = strategies ? getActiveStrategyTrades(trades, strategies) : trades;
+  
+  const winningTrades = activeTrades.filter(trade => {
     let pnl = 0;
     if (trade.profitLoss) {
       pnl = typeof trade.profitLoss === 'string' ? parseFloat(trade.profitLoss) : trade.profitLoss;
@@ -166,7 +197,7 @@ export function calculateProfitFactor(trades: Trade[]): number {
     return pnl > 0;
   });
   
-  const losingTrades = trades.filter(trade => {
+  const losingTrades = activeTrades.filter(trade => {
     let pnl = 0;
     if (trade.profitLoss) {
       pnl = typeof trade.profitLoss === 'string' ? parseFloat(trade.profitLoss) : trade.profitLoss;

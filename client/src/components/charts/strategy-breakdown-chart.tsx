@@ -4,6 +4,7 @@ import { formatCurrency, groupTradesByStrategy, calculateTotalPnL } from "@/lib/
 
 interface StrategyBreakdownChartProps {
   trades: any[];
+  strategies?: any[];
 }
 
 const COLORS = [
@@ -15,13 +16,13 @@ const COLORS = [
   "hsl(160, 60%, 45%)",
 ];
 
-export default function StrategyBreakdownChart({ trades }: StrategyBreakdownChartProps) {
+export default function StrategyBreakdownChart({ trades, strategies = [] }: StrategyBreakdownChartProps) {
   const strategyGroups = groupTradesByStrategy(trades);
   
   const strategyData = Object.entries(strategyGroups).map(([strategy, strategyTrades], index) => ({
     strategy: strategy === "No Strategy" ? "Unassigned" : strategy,
     trades: strategyTrades.length,
-    pnl: calculateTotalPnL(strategyTrades),
+    pnl: calculateTotalPnL(strategyTrades, strategies),
     color: COLORS[index % COLORS.length],
     percentage: (strategyTrades.length / trades.length) * 100,
   }));

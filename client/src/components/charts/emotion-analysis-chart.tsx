@@ -5,6 +5,7 @@ import { Trade } from "@shared/schema";
 
 interface EmotionAnalysisChartProps {
   trades: any[];
+  strategies?: any[];
 }
 
 const EMOTION_COLORS = {
@@ -17,7 +18,7 @@ const EMOTION_COLORS = {
   Disciplined: "hsl(160, 60%, 45%)",
 };
 
-export default function EmotionAnalysisChart({ trades }: EmotionAnalysisChartProps) {
+export default function EmotionAnalysisChart({ trades, strategies = [] }: EmotionAnalysisChartProps) {
   // Group trades by emotion
   const emotionGroups = trades.reduce((acc, trade) => {
     const emotion = trade.emotion || "Unknown";
@@ -31,7 +32,7 @@ export default function EmotionAnalysisChart({ trades }: EmotionAnalysisChartPro
   const emotionData = Object.entries(emotionGroups).map(([emotion, emotionTrades]) => {
   const tradesArr = emotionTrades as Trade[];
 
-  const pnl = calculateTotalPnL(tradesArr);
+  const pnl = calculateTotalPnL(tradesArr, strategies);
   const winningTrades = tradesArr.filter(
     (t) => parseFloat(t.profitLoss?.toString() || "0") > 0
   ).length;

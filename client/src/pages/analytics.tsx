@@ -88,18 +88,18 @@ export default function Analytics() {
   }
 
   const totalPnL = calculateTotalPnL(filteredTrades);
-  const winRate = calculateWinRate(filteredTrades);
-  const avgWin = calculateAverageWin(filteredTrades);
-  const avgLoss = calculateAverageLoss(filteredTrades);
-  const maxDrawdown = calculateMaxDrawdown(filteredTrades);
-  const profitFactor = calculateProfitFactor(filteredTrades);
+  const winRate = calculateWinRate(filteredTrades, strategies);
+  const avgWin = calculateAverageWin(filteredTrades, strategies);
+  const avgLoss = calculateAverageLoss(filteredTrades, strategies);
+  const maxDrawdown = calculateMaxDrawdown(filteredTrades, strategies);
+  const profitFactor = calculateProfitFactor(filteredTrades, strategies);
 
   const strategyGroups = groupTradesByStrategy(filteredTrades);
   const strategyPerformance = Object.entries(strategyGroups).map(([strategy, strategyTrades]) => ({
     strategy,
     trades: strategyTrades.length,
-    pnl: calculateTotalPnL(strategyTrades),
-    winRate: calculateWinRate(strategyTrades),
+    pnl: calculateTotalPnL(strategyTrades, strategies),
+    winRate: calculateWinRate(strategyTrades, strategies),
   }));
 
   // Additional analytics
@@ -339,6 +339,7 @@ export default function Analytics() {
             transition={{ duration: 0.5 }}
           >
             <StrategyBreakdownChart trades={filteredTrades} />
+            <StrategyBreakdownChart trades={filteredTrades} strategies={strategies} />
             <Card>
               <CardHeader>
                 <CardTitle>Strategy Rankings</CardTitle>
@@ -386,6 +387,7 @@ export default function Analytics() {
             transition={{ duration: 0.5 }}
           >
             <EmotionAnalysisChart trades={filteredTrades} />
+            <EmotionAnalysisChart trades={filteredTrades} strategies={strategies} />
             <Card>
               <CardHeader>
                 <CardTitle>Trading Psychology Insights</CardTitle>
