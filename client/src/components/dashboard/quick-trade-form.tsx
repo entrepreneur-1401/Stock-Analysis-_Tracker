@@ -14,6 +14,7 @@ import { useTrades } from "@/hooks/use-trades";
 import { useStrategies } from "@/hooks/use-strategies";
 import { calculatePnL } from "@/lib/calculations";
 import { Link } from "wouter";
+import { Badge } from "@/components/ui/badge";
 
 const quickTradeSchema = z.object({
   stockName: z.string().min(1, "Stock name is required"),
